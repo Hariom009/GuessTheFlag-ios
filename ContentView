@@ -1,0 +1,78 @@
+//
+//  ContentView.swift
+//  GuessTheFlag
+//
+//  Created by Hari's Mac on 29.11.2024.
+//
+
+import SwiftUI
+
+struct ContentView: View {
+    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy","Nigeria","Poland", "Spain","UK" , "Ukraine","US"].shuffled()
+    @State private var correctAns = Int.random(in:0...2)
+    
+    @State private var showScore = false
+    @State private var scoreTitle = ""
+    @State private var score = 0
+    var body: some View {
+        ZStack{
+            LinearGradient(gradient: Gradient(colors: [.indigo, .yellow]), startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            VStack{
+                Text("Guess the flag")
+                    .font(.largeTitle.weight(.heavy))
+                
+                VStack(spacing:15){
+                    VStack{
+                            Text("of")
+                            .foregroundStyle(.regularMaterial)
+                            .font(.subheadline.weight(.bold))
+                        Text(countries[correctAns])
+                            .foregroundStyle(.black)
+                            .font(.largeTitle.weight(.heavy))
+                    }
+                    ForEach(0..<3){number in
+                        Button{
+                            flagTapped(number)
+                        }label:{
+                            Image(countries[number])
+                                .clipShape(.capsule)
+                                .shadow(radius: 30)
+                        }
+                    }
+                   
+                    Text("\(scoreTitle)")
+                    Text("Score is \(score)")
+                        .font(.title.weight(.bold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical,15)
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 20))
+          
+            }
+            .padding()
+        }
+        .alert(scoreTitle, isPresented: $showScore){
+            Button("Continue" , action: askQuestion)
+        }message: {
+            Text("Your score is \(score)")
+        }
+    }
+    func flagTapped(_ number : Int){
+        if number == correctAns{
+            scoreTitle = "Correct"
+            score = score + 1
+        }else{
+            scoreTitle = "Wrong"
+        }
+        showScore = true
+    }
+    func askQuestion(){
+        countries.shuffle()
+        correctAns = Int.random(in:0...2)
+    }
+}
+#Preview {
+    ContentView()
+}
